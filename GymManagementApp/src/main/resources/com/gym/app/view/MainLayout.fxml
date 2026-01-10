@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+
+
+
+<BorderPane fx:id="mainRoot" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gym.app.controller.MainController">
+   <left>
+      <VBox prefWidth="200.0" style="-fx-background-color: #2c3e50;" BorderPane.alignment="CENTER">
+         <children>
+            <Label alignment="CENTER" prefHeight="60.0" prefWidth="200.0" text="Gym Manager" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="20.0" />
+               </VBox.margin>
+            </Label>
+            <VBox spacing="10.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#handleDashboardClick" prefHeight="40.0" prefWidth="200.0" styleClass="nav-button" text="%nav.dashboard" />
+                  <Button mnemonicParsing="false" onAction="#handleMemberManagementClick" prefHeight="40.0" prefWidth="200.0" styleClass="nav-button" text="%nav.members" />
+                  <Button mnemonicParsing="false" onAction="#handleCheckInClick" prefHeight="40.0" prefWidth="200.0" styleClass="nav-button" text="%nav.checkin" />
+                  <Button mnemonicParsing="false" onAction="#handleReportsClick" prefHeight="40.0" prefWidth="200.0" styleClass="nav-button" text="%nav.reports" />
+               </children>
+               <padding>
+                  <Insets left="10.0" right="10.0" />
+               </padding>
+            </VBox>
+            <VBox alignment="BOTTOM_CENTER" VBox.vgrow="ALWAYS">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#handleSettingsClick" prefHeight="40.0" prefWidth="200.0" styleClass="nav-button" text="%nav.settings" />
+                  <HBox fx:id="languageFlagsBox" alignment="CENTER" prefHeight="40.0" spacing="10.0">
+                     <!-- Language Flags will be added dynamically in MainController -->
+                     <VBox.margin>
+                        <Insets bottom="10.0" top="10.0" />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+   </left>
+   <center>
+      <StackPane fx:id="contentPane" BorderPane.alignment="CENTER">
+         <!-- Content will be loaded here by ViewManager -->
+      </StackPane>
+   </center>
+</BorderPane>

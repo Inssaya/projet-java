@@ -1,0 +1,28 @@
+# Maven / Java build outputs
+**/target/
+*.class
+
+# IntelliJ / IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local persistence / generated assets (should live in OS app-data)
+*.db
+*.sqlite
+*.sqlite3
+error_log.txt
+**/logs/
+**/qrcodes/
+**/reports/
+RevenueReport.*
+AttendanceReport.*
+~$*.xlsx
+
+# JavaFX plugin artifacts
+*.jfr

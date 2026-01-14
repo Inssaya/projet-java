@@ -1,24 +1,32 @@
 package com.gym.app.controller;
 
-import com.gym.app.model.Member;
-import com.gym.app.service.MemberService;
-import com.gym.app.util.ErrorLogger;
-import com.gym.app.util.QRGenerator;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
-import javafx.scene.Scene;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-
 import java.io.File;
 import java.net.URL;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 import java.util.UUID;
+
+import com.gym.app.model.Member;
+import com.gym.app.service.MemberService;
+import com.gym.app.util.AppPaths;
+import com.gym.app.util.ErrorLogger;
+import com.gym.app.util.QRGenerator;
+
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 public class MemberFormController implements Initializable {
 
@@ -150,9 +158,9 @@ public class MemberFormController implements Initializable {
                         // 4. Generate visible QR code PNG (and save it to a file for printing/sharing)
                         // The QR code image is generated on the fly in loadQrCode, but we need to save the PNG file.
                         // We'll use a utility method for this.
-                        String qrFilePath = "qrcodes/" + member.getMemberId() + ".png";
+                        Path qrFilePath = AppPaths.getQrCodesDir().resolve(member.getMemberId() + ".png");
                         try {
-                            QRGenerator.saveQRImage(member.getQrCodeValue(), 300, 300, qrFilePath);
+                            QRGenerator.saveQRImage(member.getQrCodeValue(), 300, 300, qrFilePath.toString());
                         } catch (Exception e) {
                             ErrorLogger.log(e, "Failed to save QR code image to file: " + qrFilePath);
                         }

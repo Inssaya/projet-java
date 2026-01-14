@@ -3,6 +3,7 @@ package com.gym.app.util;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -15,7 +16,7 @@ import javafx.scene.layout.Priority;
 
 public class ErrorLogger {
 
-    private static final String LOG_FILE = "error_log.txt";
+    private static final Path LOG_FILE_PATH = AppPaths.getErrorLogPath();
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
@@ -27,7 +28,7 @@ public class ErrorLogger {
      */
     public static void log(Throwable e, String userMessage) {
         // 1. Log every exception into file: error_log.txt
-        try (PrintWriter pw = new PrintWriter(new FileWriter(LOG_FILE, true))) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(LOG_FILE_PATH.toString(), true))) {
             pw.println("--- Exception Logged: " + LocalDateTime.now().format(FORMATTER) + " ---");
             pw.println("User Message: " + userMessage);
             e.printStackTrace(pw);

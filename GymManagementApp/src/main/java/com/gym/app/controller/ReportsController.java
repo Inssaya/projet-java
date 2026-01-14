@@ -1,26 +1,29 @@
 package com.gym.app.controller;
 
-import com.gym.app.model.Attendance;
-import com.gym.app.model.Payment;
-import com.gym.app.service.AttendanceService;
-import com.gym.app.service.PaymentService;
-import com.gym.app.util.ErrorLogger;
-import com.gym.app.util.ReportExporter;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
-
 import java.net.URL;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ResourceBundle;
+
+import com.gym.app.model.Attendance;
+import com.gym.app.model.Payment;
+import com.gym.app.service.AttendanceService;
+import com.gym.app.service.PaymentService;
+import com.gym.app.util.AppPaths;
+import com.gym.app.util.ErrorLogger;
+import com.gym.app.util.ReportExporter;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 public class ReportsController implements Initializable {
 
@@ -103,8 +106,9 @@ public class ReportsController implements Initializable {
     @FXML
     private void handleExportRevenuePDF() {
         try {
-            ReportExporter.exportRevenueToPDF(paymentList, "RevenueReport.pdf");
-            showAlert(Alert.AlertType.INFORMATION, "Export Successful", "Revenue report exported to RevenueReport.pdf (simulated PDF).");
+            Path filePath = AppPaths.getReportsDir().resolve("RevenueReport.pdf");
+            ReportExporter.exportRevenueToPDF(paymentList, filePath.toString());
+            showAlert(Alert.AlertType.INFORMATION, "Export Successful", "Revenue report exported to:\n" + filePath + "\n(simulated PDF)");
         } catch (Exception e) {
             ErrorLogger.log(e, "Failed to export revenue report to PDF.");
             showAlert(Alert.AlertType.ERROR, "Export Failed", "Failed to export revenue report to PDF. Check error log.");
@@ -114,8 +118,9 @@ public class ReportsController implements Initializable {
     @FXML
     private void handleExportRevenueExcel() {
         try {
-            ReportExporter.exportRevenueToExcel(paymentList, "RevenueReport.xlsx");
-            showAlert(Alert.AlertType.INFORMATION, "Export Successful", "Revenue report exported to RevenueReport.xlsx.");
+            Path filePath = AppPaths.getReportsDir().resolve("RevenueReport.xlsx");
+            ReportExporter.exportRevenueToExcel(paymentList, filePath.toString());
+            showAlert(Alert.AlertType.INFORMATION, "Export Successful", "Revenue report exported to:\n" + filePath);
         } catch (Exception e) {
             ErrorLogger.log(e, "Failed to export revenue report to Excel.");
             showAlert(Alert.AlertType.ERROR, "Export Failed", "Failed to export revenue report to Excel. Check error log.");
@@ -125,8 +130,9 @@ public class ReportsController implements Initializable {
     @FXML
     private void handleExportAttendancePDF() {
         try {
-            ReportExporter.exportAttendanceToPDF(attendanceList, "AttendanceReport.pdf");
-            showAlert(Alert.AlertType.INFORMATION, "Export Successful", "Attendance report exported to AttendanceReport.pdf (simulated PDF).");
+            Path filePath = AppPaths.getReportsDir().resolve("AttendanceReport.pdf");
+            ReportExporter.exportAttendanceToPDF(attendanceList, filePath.toString());
+            showAlert(Alert.AlertType.INFORMATION, "Export Successful", "Attendance report exported to:\n" + filePath + "\n(simulated PDF)");
         } catch (Exception e) {
             ErrorLogger.log(e, "Failed to export attendance report to PDF.");
             showAlert(Alert.AlertType.ERROR, "Export Failed", "Failed to export attendance report to PDF. Check error log.");
@@ -136,8 +142,9 @@ public class ReportsController implements Initializable {
     @FXML
     private void handleExportAttendanceExcel() {
         try {
-            ReportExporter.exportAttendanceToExcel(attendanceList, "AttendanceReport.xlsx");
-            showAlert(Alert.AlertType.INFORMATION, "Export Successful", "Attendance report exported to AttendanceReport.xlsx.");
+            Path filePath = AppPaths.getReportsDir().resolve("AttendanceReport.xlsx");
+            ReportExporter.exportAttendanceToExcel(attendanceList, filePath.toString());
+            showAlert(Alert.AlertType.INFORMATION, "Export Successful", "Attendance report exported to:\n" + filePath);
         } catch (Exception e) {
             ErrorLogger.log(e, "Failed to export attendance report to Excel.");
             showAlert(Alert.AlertType.ERROR, "Export Failed", "Failed to export attendance report to Excel. Check error log.");

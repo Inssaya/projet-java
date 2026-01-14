@@ -1,19 +1,35 @@
 package com.gym.app.util;
 
-import com.gym.app.model.Attendance;
-import com.gym.app.model.Payment;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import com.gym.app.model.Attendance;
+import com.gym.app.model.Payment;
+
 public class ReportExporter {
+
+    private static void ensureParentDirectory(String filePath) throws IOException {
+        Path path = Paths.get(filePath);
+        Path parent = path.getParent();
+        if (parent != null) {
+            Files.createDirectories(parent);
+        }
+    }
 
     // --- Excel Export using Apache POI ---
 
     public static void exportRevenueToExcel(List<Payment> payments, String filePath) throws IOException {
+        ensureParentDirectory(filePath);
+
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Revenue Report");
 
@@ -46,6 +62,8 @@ public class ReportExporter {
     }
 
     public static void exportAttendanceToExcel(List<Attendance> attendanceList, String filePath) throws IOException {
+        ensureParentDirectory(filePath);
+
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Attendance Report");
 
@@ -80,6 +98,7 @@ public class ReportExporter {
     // the necessary steps for a full PDF implementation.
 
     public static void exportRevenueToPDF(List<Payment> payments, String filePath) throws IOException {
+        ensureParentDirectory(filePath);
         try (java.io.PrintWriter writer = new java.io.PrintWriter(filePath)) {
             writer.println("--- Revenue Report ---");
             writer.println("Generated on: " + java.time.LocalDate.now());
@@ -100,6 +119,7 @@ public class ReportExporter {
     }
 
     public static void exportAttendanceToPDF(List<Attendance> attendanceList, String filePath) throws IOException {
+        ensureParentDirectory(filePath);
         try (java.io.PrintWriter writer = new java.io.PrintWriter(filePath)) {
             writer.println("--- Attendance Report ---");
             writer.println("Generated on: " + java.time.LocalDate.now());

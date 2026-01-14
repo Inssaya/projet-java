@@ -34,6 +34,18 @@
                </children>
             </VBox>
             <Button mnemonicParsing="false" onAction="#handleApplyLanguage" text="Apply Language" />
+
+            <Label text="%settings.db.section">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <VBox spacing="10.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#handleBackupDatabase" text="%settings.db.backup" />
+                  <Button mnemonicParsing="false" onAction="#handleRestoreDatabase" text="%settings.db.restore" />
+               </children>
+            </VBox>
          </children>
          <padding>
             <Insets left="20.0" top="20.0" />

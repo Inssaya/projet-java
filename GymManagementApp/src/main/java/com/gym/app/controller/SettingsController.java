@@ -1,19 +1,28 @@
 package com.gym.app.controller;
 
+import java.io.File;
+import java.net.URL;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.ResourceBundle;
+
 import com.gym.app.MainApp;
+import com.gym.app.db.DatabaseManager;
+import com.gym.app.service.DatabaseBackupService;
 import com.gym.app.util.ErrorLogger;
 import com.gym.app.util.ViewManager;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
-import java.net.URL;
-import java.util.Locale;
-import java.util.ResourceBundle;
 
 public class SettingsController implements Initializable {
 
@@ -21,6 +30,8 @@ public class SettingsController implements Initializable {
     private ComboBox<LanguageOption> languageComboBox;
 
     private ResourceBundle currentBundle;
+
+    private final DatabaseBackupService backupService = new DatabaseBackupService();
 
     private static class LanguageOption {
         String name;
@@ -98,6 +109,81 @@ public class SettingsController implements Initializable {
             showAlert(Alert.AlertType.ERROR, "Error", "Failed to apply language. Check error log.");
         }
     }
+
+    @FXML
+    private void handleBackupDatabase() {
+        try {
+            FileChooser chooser = new FileChooser();
+            chooser.setTitle(getText("settings.db.fileChooser.backup", "Choose backup file location"));
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
+                    getText("settings.db.fileChooser.filter", "SQLite Database (*.db, *.sqlite)"),
+                    "*.db", "*.sqlite"
+            ));
+            chooser.setInitialFileName("gym-backup-" + LocalDate.now() + ".db");
+
+            File destination = chooser.showSaveDialog(languageComboBox.getScene().getWindow());
+            if (destination == null) {
+                return;
+            }
+
+            backupService.backupTo(destination.toPath());
+            showAlert(Alert.AlertType.INFORMATION,
+                    getText("alert.success.title", "Success"),
+                    getText("settings.db.backup.success", "Backup created successfully."));
+
+        } catch (Exception e) {
+            ErrorLogger.log(e, "Failed to backup SQLite database.");
+            showAlert(Alert.AlertType.ERROR,
+                    getText("alert.error.title", "Error"),
+                    getText("settings.db.backup.error", "Failed to create backup. Check error log."));
+        }
+    }
+
+    @FXML
+    private void handleRestoreDatabase() {
+        try {
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle(getText("settings.db.restore.title", "Restore Database"));
+            confirm.setHeaderText(null);
+            confirm.setContentText(getText("settings.db.restore.confirm", "Restoring will overwrite current data. Continue?"));
+            Optional<ButtonType> choice = confirm.showAndWait();
+            if (choice.isEmpty() || choice.get() != ButtonType.OK) {
+                return;
+            }
+
+            FileChooser chooser = new FileChooser();
+            chooser.setTitle(getText("settings.db.fileChooser.restore", "Select a backup file to restore"));
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
+                    getText("settings.db.fileChooser.filter", "SQLite Database (*.db, *.sqlite)"),
+                    "*.db", "*.sqlite"
+            ));
+
+            File source = chooser.showOpenDialog(languageComboBox.getScene().getWindow());
+            if (source == null) {
+                return;
+            }
+
+            // Best-effort: restore by copying over the SQLite file.
+            // If the DB is locked (common on Windows), we show a helpful message.
+            Path dbPath = backupService.getDatabasePath();
+            backupService.restoreFrom(source.toPath());
+
+            // Re-initialize schema in case the restored DB is older/newer.
+            DatabaseManager.initializeDatabase();
+
+            showAlert(Alert.AlertType.INFORMATION,
+                    getText("alert.success.title", "Success"),
+                    getText("settings.db.restore.success", "Database restored successfully. Please restart the application."));
+
+            System.out.println("Database restored to: " + dbPath);
+
+        } catch (Exception e) {
+            ErrorLogger.log(e, "Failed to restore SQLite database.");
+            showAlert(Alert.AlertType.ERROR,
+                    getText("alert.error.title", "Error"),
+                    getText("settings.db.restore.error", "Restore failed. If the database is in use, close the app and try again."));
+        }
+    }
     
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
@@ -105,5 +191,16 @@ public class SettingsController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    private String getText(String key, String fallback) {
+        if (currentBundle == null) {
+            return fallback;
+        }
+        try {
+            return currentBundle.getString(key);
+        } catch (Exception ignored) {
+            return fallback;
+        }
     }
 }

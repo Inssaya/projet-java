@@ -1,15 +1,18 @@
 package com.gym.app.db;
 
-import com.gym.app.util.ErrorLogger;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.gym.app.util.AppPaths;
+import com.gym.app.util.ErrorLogger;
+
 public class DatabaseManager {
 
-    private static final String DB_NAME = "gym_management.db";
-    private static final String DB_URL = "jdbc:sqlite:" + DB_NAME;
+    private static String getJdbcUrl() {
+        return "jdbc:sqlite:" + AppPaths.getDatabasePath();
+    }
 
     private DatabaseManager() {
         // Private constructor to prevent instantiation
@@ -21,13 +24,17 @@ public class DatabaseManager {
      * @throws SQLException if a database access error occurs.
      */
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(DB_URL);
+        return DriverManager.getConnection(getJdbcUrl());
     }
 
     /**
      * Initializes the database by creating all necessary tables if they do not exist.
      */
     public static void initializeDatabase() {
+        // If upgrading from an older version that stored the DB in the working directory,
+        // migrate it once to the OS application data directory.
+        AppPaths.migrateLegacyDatabaseIfPresent();
+
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
 
@@ -71,7 +78,7 @@ public class DatabaseManager {
                                    ");";
             stmt.execute(sqlSystemInfo);
 
-            System.out.println("Database initialized successfully.");
+            System.out.println("Database initialized successfully at: " + AppPaths.getDatabasePath());
 
         } catch (SQLException e) {
             ErrorLogger.log(e, "Failed to initialize the database schema. Please check if the SQLite JDBC driver is correctly configured.");
